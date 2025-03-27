@@ -1,52 +1,70 @@
 
-# ROSBag Data Download and Conversion Guide
+# Spawn Gazebo World
 
-## Download Data File (ROSBag)
+## Download
 
-[Download Link](https://www.uma.es/robotics-and-mechatronics/info/132852/negs-ugv-dataset?set_language=en)
+### Package
 
-By following this link, you can download a ZIP file (containing human-readable text format and JPEG images) and a ROSBAG ZIP file.
-
-### ZIP FILE (human-readable text format and JPEG images):
-- Contains RGB images, segmentation image data, and other related data.
-
-### ROSBAG:
-- Originally developed for ROS1. After converting it to ROS2, you can monitor the topics in real-time.
-
-> **Note:** When running this ROS bag, RGB images are published as `/CompressedImage`. To visualize these images in RViz, you must convert the `/CompressedImage` messages into standard `/Image` messages.
-
----
-
-## How to Convert ROS1 ROSbag to ROS2
-
-### 1. Install the `rosbags` Library
-
-Open a terminal and run the following command:
+After downloading this package file, unzip it and place it under:
 
 ```bash
-pip install rosbags
+$HOME/{your workspace}/src
 ```
 
-### 2. Navigate to Your ROSbag File Location
+### Model Files
 
-Move to the directory containing your ROS1 `.bag` file:
+Please visit the following website and download `models.zip`:
+
+[http://u.uma.es/dr3/datasetcode/](http://u.uma.es/dr3/datasetcode/)
+
+Then, unzip `models.zip` to:
 
 ```bash
-cd /path/to/your/rosbag
+$HOME/{your workspace}/src/spawn_gazebo/models
 ```
 
-### 3. Convert ROS1 Rosbag to ROS2
+## Configuration
 
-Run the `rosbags-convert` command to convert your `.bag` file to ROS2 format. Replace `your_rosbag_file.bag` with your file's name:
+Open your `.bashrc` file and add the following command:
 
 ```bash
-rosbags-convert --src your_rosbag_file.bag --dst output_ros2_bag
+export GAZEBO_MODEL_PATH=$HOME/{your workspace}/src/spawn_gazebo/models:$GAZEBO_MODEL_PATH
 ```
 
-### 4. Play the Converted ROS2 Bag
+> **Note:** This path should be the actual location where your downloaded `models` folder is placed.
 
-Once converted, play the ROS2 bag with:
+## Build
+
+Navigate to your workspace directory and build using:
 
 ```bash
-ros2 bag play output_ros2_bag
+colcon build --symlink-install
 ```
+
+## Run
+
+Spawn a Gazebo world with the desired environment argument. Supported environments:
+- `forest`
+- `hill` *(Default)*
+- `lake`
+- `park`
+- `forest_tagged`
+- `hill_tagged`
+- `lake_tagged`
+- `park_tagged`
+
+Launch command:
+
+```bash
+ros2 launch spawn_gazebo spawn_gazebo_world.launch.py world_name="{environment name}"
+```
+
+### Example:
+
+```bash
+ros2 launch spawn_gazebo spawn_gazebo_world.launch.py world_name="hill_tagged"
+```
+
+> **Recommended:** For our research, spawning `hill` or `hill_tagged` is recommended.
+
+> **Note:** Loading the world may take some time; please be patient. Specifically, in the `forest` environment, you may initially observe the ground appearing sunken after Gazebo starts. If you wait longer, the ground plane will load correctly, and the environment will function normally.
